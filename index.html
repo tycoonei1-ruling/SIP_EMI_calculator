@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SIP vs EMI Calculator</title>
+  <style>
+    body { font-family: Arial; max-width: 420px; margin: auto; padding: 20px; }
+    input, button { width: 100%; padding: 10px; margin: 6px 0; }
+    .box { background: #203242; padding: 12px; margin-top: 10px; border-radius: 6px; }
+  </style>
+</head>
+<body>
+
+<h2>Make Your Loan Interest Free</h2>
+
+<input id="loan" placeholder="Loan Amount">
+<input id="interest" placeholder="Loan Interest (Years) %">
+<input id="tenure" placeholder="Tenure (Years)">
+<input id="sip" placeholder="Expected SIP Return %">
+
+<button onclick="calculate()">Calculate</button>
+
+<div class="box" id="output"></div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzyCjIq2GCV6EsHj0fiSzmxN92Ki1R81bKYoAJMUzCrGhZ5L9qiZZT3Td1BjmvDNPzw/exec";
+
+function calculate() {
+  fetch(API_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      loanAmount: loan.value,
+      loanInterest: interest.value,
+      tenure: tenure.value,
+      sipReturn: sip.value
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    output.innerHTML = `
+      <b>EMI:</b> ₹${data.emi.toFixed(2)}<br>
+      <b>Total Paid:</b> ₹${data.totalPaid.toFixed(2)}<br>
+      <b>Interest:</b> ₹${data.interestPaid.toFixed(2)}<br>
+      <b>Required SIP:</b> ₹${data.sipRequired.toFixed(2)}<br>
+      <b>SIP Maturity:</b> ₹${data.sipMaturity.toFixed(2)}
+    `;
+  });
+}
+</script>
+
+</body>
+</html>
