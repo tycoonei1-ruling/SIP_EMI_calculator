@@ -1,50 +1,358 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>SIP vs EMI Calculator</title>
-  <style>
-    body { font-family: Arial; max-width: 420px; margin: auto; padding: 20px; }
-    input, button { width: 100%; padding: 10px; margin: 6px 0; }
-    .box { background: #203242; padding: 12px; margin-top: 10px; border-radius: 6px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Live Market Dashboard</title>
+
+<style>
+:root{
+  --bg:#0b1220;
+  --card:#111827;
+  --card2:#0f172a;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --border:rgba(255,255,255,.08);
+  --shadow:0 10px 25px rgba(0,0,0,.35);
+  --green:#22c55e;
+  --red:#ef4444;
+  --cyan:#38bdf8;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:system-ui;
+  background: linear-gradient(180deg, #050814, var(--bg));
+  color:var(--text);
+  padding:16px;
+  padding-bottom: 90px;
+}
+
+.container{
+  max-width:520px;
+  margin:auto;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:14px;
+}
+.header h1{
+  margin:0;
+  font-size:20px;
+  font-weight:900;
+}
+.header p{
+  margin:6px 0 0;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.topGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+  margin-top:14px;
+}
+
+.bigCard{
+  background: rgba(17,24,39,.86);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:16px;
+  box-shadow: var(--shadow);
+}
+
+.bigLabel{
+  font-size:12px;
+  color:var(--muted);
+}
+.bigValue{
+  font-size:26px;
+  font-weight:900;
+  margin-top:6px;
+}
+
+.sectionTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:18px 0 10px;
+}
+.sectionTitle .left{
+  font-size:13px;
+  font-weight:900;
+  color:#cbd5e1;
+}
+.sectionTitle .right{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.cards{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.marketCard{
+  background: rgba(15,23,42,.86);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:14px;
+  box-shadow: var(--shadow);
+}
+
+.row1{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.name{
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.2px;
+}
+
+.cmp{
+  font-size:20px;
+  font-weight:900;
+  text-align:right;
+}
+
+.row2{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:10px;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.badge{
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  color:#cbd5e1;
+}
+
+.up{
+  color: var(--green);
+  border-color: rgba(34,197,94,.35);
+  background: rgba(34,197,94,.12);
+}
+.down{
+  color: var(--red);
+  border-color: rgba(239,68,68,.35);
+  background: rgba(239,68,68,.12);
+}
+
+.smallNote{
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:14px;
+}
+
+.stickyBar{
+  position:fixed;
+  left:0; right:0; bottom:0;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--border);
+  background: rgba(2,6,23,.88);
+  backdrop-filter: blur(10px);
+}
+.stickyWrap{
+  max-width:520px;
+  margin:auto;
+  display:flex;
+  gap:10px;
+}
+button{
+  flex:1;
+  padding:14px;
+  border-radius:16px;
+  border:none;
+  font-weight:900;
+  font-size:16px;
+  cursor:pointer;
+}
+button:active{transform:scale(.99);}
+.btn1{
+  background:#334155;
+  color:#e2e8f0;
+}
+.btn2{
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color:white;
+}
+</style>
 </head>
+
 <body>
+<div class="container">
 
-<h2>Make Your Loan Interest Free</h2>
+  <div class="header">
+    <h1>📊 Live Market Dashboard</h1>
+    <p>Gold + Silver + Your Google Sheet Data • Mobile Card UI</p>
+  </div>
 
-<input id="loan" placeholder="Loan Amount">
-<input id="interest" placeholder="Loan Interest (Years) %">
-<input id="tenure" placeholder="Tenure (Years)">
-<input id="sip" placeholder="Expected SIP Return %">
+  <!-- TOP 2 CARDS -->
+  <div class="topGrid">
+    <div class="bigCard">
+      <div class="bigLabel">Gold (USD / ounce)</div>
+      <div class="bigValue" id="gold">--</div>
+    </div>
 
-<button onclick="calculate()">Calculate</button>
+    <div class="bigCard">
+      <div class="bigLabel">Silver (USD / ounce)</div>
+      <div class="bigValue" id="silver">--</div>
+    </div>
+  </div>
 
-<div class="box" id="output"></div>
+  <div class="sectionTitle">
+    <div class="left">📌 Market Story Cards</div>
+    <div class="right" id="lastUpdated">Loading...</div>
+  </div>
+
+  <div class="cards" id="cards">
+    <div class="marketCard">Loading Sheet Data...</div>
+  </div>
+
+  <div class="smallNote">Auto Refresh every 60 seconds ✅</div>
+
+</div>
+
+<!-- Sticky buttons -->
+<div class="stickyBar">
+  <div class="stickyWrap">
+    <button class="btn1" onclick="loadSheet()">Refresh Sheet</button>
+    <button class="btn2" onclick="refreshAll()">Refresh All</button>
+  </div>
+</div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzyCjIq2GCV6EsHj0fiSzmxN92Ki1R81bKYoAJMUzCrGhZ5L9qiZZT3Td1BjmvDNPzw/exec";
+/* ✅ YOUR LIVE GOOGLE SHEET CSV */
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT0dnAh3qc_JIaSECrnUxPjPJEOWW9rPz-6vZzyUBzw-5yWdGvY-90s_cF_bMEShNDkoI1vJV35UCII/pub?gid=0&single=true&output=csv";
 
-function calculate() {
-  fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      loanAmount: loan.value,
-      loanInterest: interest.value,
-      tenure: tenure.value,
-      sipReturn: sip.value
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    output.innerHTML = `
-      <b>EMI:</b> ₹${data.emi.toFixed(2)}<br>
-      <b>Total Paid:</b> ₹${data.totalPaid.toFixed(2)}<br>
-      <b>Interest:</b> ₹${data.interestPaid.toFixed(2)}<br>
-      <b>Required SIP:</b> ₹${data.sipRequired.toFixed(2)}<br>
-      <b>SIP Maturity:</b> ₹${data.sipMaturity.toFixed(2)}
-    `;
-  });
+/* Refresh Settings */
+const REFRESH_MS = 60000;
+
+/* ✅ GOLD & SILVER JSONP */
+function goldCallback(data){
+  const gold = data.items[0].xauPrice;
+  const silver = data.items[0].xagPrice;
+  document.getElementById("gold").innerText = "$ " + gold.toFixed(2);
+  document.getElementById("silver").innerText = "$ " + silver.toFixed(2);
 }
+function loadGold(){
+  const script = document.createElement("script");
+  script.src = "https://data-asg.goldprice.org/dbXRates/USD?callback=goldCallback";
+  document.body.appendChild(script);
+}
+
+/* ✅ CSV Parser */
+function parseCSV(csvText){
+  const lines = csvText.trim().split("\n");
+  return lines.map(line => line.split(",").map(x => x.replace(/(^"|"$)/g, "").trim()));
+}
+
+function isNumber(x){
+  return !isNaN(parseFloat(x)) && isFinite(x);
+}
+
+function badgeFor(value){
+  let n = parseFloat(value);
+  if(!isNumber(value)) return `<span class="badge">--</span>`;
+  if(n > 0) return `<span class="badge up">▲ ${value}</span>`;
+  if(n < 0) return `<span class="badge down">▼ ${value}</span>`;
+  return `<span class="badge">${value}</span>`;
+}
+
+/* ✅ Load Google Sheet into Cards */
+async function loadSheet(){
+  try{
+    const cards = document.getElementById("cards");
+    cards.innerHTML = `<div class="marketCard">Loading Sheet Data...</div>`;
+
+    const res = await fetch(SHEET_CSV_URL, { cache: "no-store" });
+    if(!res.ok) throw new Error("HTTP " + res.status);
+
+    const csv = await res.text();
+    const rows = parseCSV(csv);
+
+    let html = "";
+
+    for(let i=1; i<rows.length; i++){
+      const r = rows[i];
+      if(r.length < 2) continue;
+
+      const name = r[0] || "";
+      const cmp = r[1] || "--";
+      const chg = r[2] || "0";
+      const pct = r[3] || "0";
+
+      html += `
+        <div class="marketCard">
+          <div class="row1">
+            <div>
+              <div class="name">${name}</div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:4px;">CMP • Change • Change %</div>
+            </div>
+            <div class="cmp">${cmp}</div>
+          </div>
+
+          <div class="row2">
+            ${badgeFor(chg)}
+            ${badgeFor(pct + "%")}
+          </div>
+        </div>
+      `;
+    }
+
+    if(html.trim() === ""){
+      html = `<div class="marketCard">No data found in sheet.</div>`;
+    }
+
+    cards.innerHTML = html;
+
+  }catch(err){
+    document.getElementById("cards").innerHTML = `
+      <div class="marketCard" style="border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);">
+        <div style="font-weight:900;color:#fecaca;">❌ Failed to load Google Sheet data</div>
+        <div style="font-size:12px;color:#94a3b8;margin-top:6px;">
+          Please confirm your sheet is published and link is correct.
+        </div>
+      </div>
+    `;
+    console.error(err);
+  }
+}
+
+/* ✅ Refresh Time */
+function setLastUpdated(){
+  const now = new Date();
+  document.getElementById("lastUpdated").innerText =
+    "Last Updated: " + now.toLocaleTimeString();
+}
+
+function refreshAll(){
+  loadGold();
+  loadSheet();
+  setLastUpdated();
+}
+
+/* initial load */
+refreshAll();
+
+/* auto refresh */
+setInterval(refreshAll, REFRESH_MS);
 </script>
 
 </body>
